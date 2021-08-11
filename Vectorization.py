@@ -16,6 +16,7 @@ import re
 from tqdm import tqdm
 
 from sklearn.feature_extraction.text import TfidfVectorizer
+import pickle
 
 
 ### n-gram 토크나이저 lovit/soynlp 참조 https://lovit.github.io/nlp/2018/10/23/ngram/
@@ -159,6 +160,8 @@ vectorizer = TfidfVectorizer(tokenizer = ngram_tokenizer,
                              )
 vec = vectorizer.fit_transform(tqdm(df["documents"], desc="Fit and Transform"))  
 df["vector"] = [np.reshape(x, (1, vec.shape[1])) for x in tqdm(vec.toarray())]
-df = df.drop(["documents"], axis=1)
 
-df.to_csv("vectorsOut.txt")
+with open("tfIdfVec_twitter_noun_trigram.pkl", 'wb') as output:
+    pickle.dump(vec, output, pickle.HIGHEST_PROTOCOL)
+
+# pickle로 vector만 빼낸다
