@@ -144,10 +144,10 @@ twitter = TwitterMod(twitter_Konlpy, stopWord, noun=True)
 os.chdir(r"C:\data")
 
 df = pd.read_csv("preprocessedDocumentsOut.txt")
-df = df.dropna()  # Nan 제거
+
 df["documents"].str.strip()  # Whitespace 제거
 df["count"] = df["documents"].str.len()  # string 수 
-df = df[df["count"] > 100]  # 입력내용이 1을 초과하는 입력값   
+df = df[df["count"] > 100]  # 입력내용이 100을 초과하는 텍스트만 사용   
 
 # N-gram Tuning
 n_range=(1,3)
