@@ -36,7 +36,7 @@ def calculateNumberRatio(tableContent):
     try:
         ratio = round(100 * len(number) / (len(string) + len(number)))
     except ZeroDivisionError:  # drop exeptional tables
-        ratio = 0  
+        ratio = 11  
     
     return ratio
 
@@ -119,7 +119,7 @@ for file in tqdm(pathListIter, desc="Main Loop"):
     
     tables =soup.find_all("table")
         
-    [table.decompose() for table in soup.find_all("table") if calculateNumberRatio(table.text) < 10]
+    [table.decompose() for table in soup.find_all("table") if calculateNumberRatio(table.text) > 10]
     # Loughran and McDonald 2016
     
     string = preprocessString(soup.text)
