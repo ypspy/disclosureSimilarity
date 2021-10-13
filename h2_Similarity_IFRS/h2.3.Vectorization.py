@@ -158,8 +158,7 @@ ngram_tokenizer = NgramTokenizer(ngram_counter, twitter, n_range=n_range)
 vectorizer = TfidfVectorizer(tokenizer = ngram_tokenizer,
                              lowercase = False,
                              )
-vec = vectorizer.fit_transform(tqdm(df["documents"], desc="Fit and Transform"))  
-df["vector"] = [np.reshape(x, (1, vec.shape[1])) for x in tqdm(vec.toarray())]
+vec = vectorizer.fit_transform(tqdm(df["documents"], desc="Fit and Transform"))
 
 with open("h2.tfIdfVec_twitter_noun_trigram.pkl", 'wb') as output:
     pickle.dump(vec, output, pickle.HIGHEST_PROTOCOL)
