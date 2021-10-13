@@ -7,10 +7,8 @@ Created on Mon Aug  9 13:01:18 2021
 
 
 from ckonlpy.tag import Twitter
-
 import os
 import pandas as pd
-
 import re
 from tqdm import tqdm
 
@@ -66,7 +64,6 @@ def removeStopword(dataframe, stopword):
                 container2.append(words)                    
         container.append(container2)
     return container
-
 
 # Create Tokenizer object
 os.chdir(r"C:\analytics")

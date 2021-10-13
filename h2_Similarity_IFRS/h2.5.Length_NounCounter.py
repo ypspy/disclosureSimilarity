@@ -7,10 +7,8 @@ Created on Mon Aug  9 13:01:18 2021
 
 
 from ckonlpy.tag import Twitter
-
 import os
 import pandas as pd
-
 import re
 from tqdm import tqdm
 
@@ -67,7 +65,6 @@ def removeStopword(dataframe, stopword):
         container.append(container2)
     return container
 
-
 # Create Tokenizer object
 os.chdir(r"C:\analytics")
 stopWord = pd.read_csv("dataset7.stopwords.csv", names=["stopword"])
@@ -90,6 +87,6 @@ for doc in tqdm(df["documents"], desc="Noun Counting"):
 
 df["length"] = length
 df2 = pd.read_csv("h2.similarity.txt")
-df3 = pd.merge(df2, df["key", "length"], how="inner", on=["key"])
+df3 = pd.merge(df2, df[["key", "length"]], how="inner", on=["key"])
 
 df3.to_csv("h2.similarity_length.txt")
