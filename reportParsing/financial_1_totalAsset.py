@@ -183,4 +183,4 @@ for file in tqdm(pathListIter, desc="Main Loop"):
 df["documents"] = result
 
 os.chdir("C:\data\\financials\\")
-df.to_csv("financial_1_totalAsset.txt")
+df.to_csv("financial_1_totalAsset.txt")  # 1: Asset  2: Equity
