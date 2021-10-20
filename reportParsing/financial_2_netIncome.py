@@ -31,6 +31,14 @@ def row_span_count(soup):
         result= 1
     return result
 
+def FindTargetTable(soup):
+    tables = soup.find_all("table")
+    for i in tables:
+        tds = i.find_all("td")
+        if len(tds) > 20:  # 시간 파트가 약 80정도 된다. 비교 표시 없는 경우 td가 50도 안된다. 첫번째 나오는 20 초과 table 선택
+            break
+    return i
+
 def MatrixGenerator(table):
     table_row = table.find_all("tr")
 
@@ -132,7 +140,7 @@ for file in tqdm(pathListIter, desc="Main Loop"):
     soup = soup.replace("\n", '')
     soup = BeautifulSoup(soup, "lxml")
     
-    # 분석
+    # 단위 추출
     for td in soup.find_all(["p","td"]):
         if ''.join(td.text.split()).find("단위") > 0:
             unit = ''.join(td.text.split())
@@ -145,42 +153,62 @@ for file in tqdm(pathListIter, desc="Main Loop"):
             else:
                 unit = "NA"           
             break
+
+    # IS 찾기
     
     for table in soup.find_all("table"):
-        if ''.join(table.text.split()).find("부채") > 0:
+        matchesNeg = ["미처분", "미처리", "이익잉여금", "결손"]
+        i = "".join(table.text.split())
+        if "당기순" in i and all(x not in i for x in matchesNeg):
             break
-        table = BeautifulSoup("<table></table>", features="lxml").table  # 의견 거절 등 BS가 안붙어있을 때 처리
+        table = BeautifulSoup("<table></table>", features="lxml").table
     
     matrix = MatrixGenerator(table)
-    
-    # 부채와자본총계(=자산총계) Parsing
-    
+        
+    # Net Income Parsing
+
     resultString = ''
-    bsLine = ''
+    isLine = ''
     
-    if len(matrix) > 0:  # BS가 있을 때
-        i = matrix[len(matrix)-1]  # -1: Asset  -2: Equity
-        if len(matrix[0]) == 2:  # 오리온 (2018.12)
-            bsLine = [i[0], unit, i[1].replace("=", "")]        
-        elif len(matrix[0]) % 2 == 1:  # 주석 Column이 없을 때
-            if i[1]:
-                bsLine = [i[0], unit, i[1].replace("=", "")]
-            elif i[2]:
-                bsLine = [i[0], unit, i[2].replace("=", "")]
+    if len(matrix) > 0:  # IS가 있을 때
         
-        else:  # 주석 Column이 있을 때
-            if i[2]:
-                bsLine = [i[0], unit, i[2].replace("=", "")]
-            elif i[3]:
-                bsLine = [i[0], unit, i[3].replace("=", "")]
+        exitKey = False
+        for i in matrix:
+           for j in i:
+
+               matchesNeg = ["계속", "중단", "귀속", "미처분", "미처리", "처분전",
+                             "지배", "비지배", "관계", "공동", "차감전", "이익잉여금",
+                             "결손", "剩餘金"]
+               matchesPos = ["당기순", "當期純"]
+               j = "".join(j.split())
+               
+               if any(x in j for x in matchesPos) and all(x not in j for x in matchesNeg):
+                                        
+                    if len(i) == 2:  # 오리온 (2018.12)
+                        isLine = [i[0], unit, i[1].replace("=", "")]        
+                    elif len(i) % 2 == 1:  # 주석 Column이 없을 때
+                        if i[1]:
+                            isLine = [i[0], unit, i[1].replace("=", "")]
+                        elif i[2]:
+                            isLine = [i[0], unit, i[2].replace("=", "")]
+                    else:  # 주석 Column이 있을 때
+                        if i[2]:
+                            isLine = [i[0], unit, i[2].replace("=", "")]
+                        elif i[3]:
+                            isLine = [i[0], unit, i[3].replace("=", "")]
         
-        resultString = "_".join(bsLine)
+                    resultString = "_".join(isLine)
+                    exitKey = True                    
+                    break
+            
+           if exitKey == True:
+               break
+
     elif len(matrix) == 0:  # BS가 없을 때
         resultString = ""
     
     result.append(resultString)
 
-df["documents"] = result
-
+df["netIncome"] = result
 os.chdir("C:\data\\financials\\")
-df.to_csv("financial_1_totalAsset.txt")  # 1: Asset  2: Equity
+df.to_csv("financial_3_netIncome.txt")

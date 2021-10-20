@@ -78,14 +78,10 @@ for path in tqdm([".\A001_1999\\", ".\A001_2000\\", ".\A001_2001\\",
     
     financialStatements1 = path + "*_(첨부)재무제표*.*"  # 필요한 Keyword 입력
     pathFS1 = glob.glob(financialStatements1)
-    financialStatements2 = path + "*_(첨부)연결재무제표*.*"  # 필요한 Keyword 입력
-    pathFS2 = glob.glob(financialStatements2)
     financialStatements3 = path + "*_재무제표_*.*"  # 필요한 Keyword 입력
     pathFS3 = glob.glob(financialStatements3)
-    financialStatements4 = path + "*_연결재무제표_*.*"  # 필요한 Keyword 입력
-    pathFS4 = glob.glob(financialStatements4)
             
-    pathList= pathList + pathFS1 + pathFS2 + pathFS3 + pathFS4 
+    pathList= pathList + pathFS1 + pathFS3 
 
 # 입수 과정에서 중복입수되어 표시된 duplicated 표시 파일 제거
 pathList = [x for x in pathList if "duplicated" not in x]
@@ -183,4 +179,4 @@ for file in tqdm(pathListIter, desc="Main Loop"):
 df["documents"] = result
 
 os.chdir("C:\data\\financials\\")
-df.to_csv("financial_1_totalAsset.txt")  # 1: Asset  2: Equity
+df.to_csv("financial_8_totalAsset_separate.txt")  # 1: Asset  2: Equity
