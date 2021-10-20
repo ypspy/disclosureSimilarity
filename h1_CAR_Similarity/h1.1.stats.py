@@ -27,23 +27,19 @@ for path in tqdm([".\A001_1999\\", ".\A001_2000\\", ".\A001_2001\\",
                   ".\A001_2020\\",]):
     
     businessReport = path + "*사업보고서_I.*.*"
-    
     pathBusiness = glob.glob(businessReport)
+    
     financialStatements1 = path + "*_(첨부)재무제표*.*"  # 필요한 Keyword 입력
     pathFS1 = glob.glob(financialStatements1)
-    financialStatements2 = path + "*_재무제표_*.*"  # 필요한 Keyword 입력
-    pathFS2 = glob.glob(financialStatements2)
     notes = path + "*_재무제표에대한주석*.*"  # 필요한 Keyword 입력
     pathNotes = glob.glob(notes)
     
     financialStatements1C = path + "*_(첨부)연결재무제표*.*"  # 필요한 Keyword 입력
     pathFS1C = glob.glob(financialStatements1C)
-    financialStatements2C = path + "*_연결재무제표_*.*"  # 필요한 Keyword 입력
-    pathFS2C = glob.glob(financialStatements2C)
     notesC = path + "*_연결재무제표에대한주석*.*"  # 필요한 Keyword 입력
     pathNotesC = glob.glob(notesC)
             
-    pathList= pathList + pathFS1 + pathFS2 + pathNotes + pathFS1C + pathFS2C + pathNotesC
+    pathList= pathList + pathFS1 + pathNotes + pathFS1C + pathNotesC
     pathBR = pathBR + pathBusiness
 
 # 입수 과정에서 중복입수되어 표시된 duplicated 표시 파일 제거
