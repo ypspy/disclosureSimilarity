@@ -87,6 +87,6 @@ for doc in tqdm(df["documents"], desc="Noun Counting"):
 
 df["length"] = length
 df2 = pd.read_csv("h1.similarity.txt")
-df3 = pd.merge(df2, df["key", "length"], how="inner", on=["key"])
+df3 = pd.merge(df2, df[["key", "length"]], how="inner", on=["key"])
 
 df3.to_csv("h1.similarity_length.txt")
