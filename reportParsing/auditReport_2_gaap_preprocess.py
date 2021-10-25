@@ -59,5 +59,5 @@ print(unique)
 print("샘플 drop: {0}".format(start-len(df)))
 
 # 산출치 추출
-df = df[["key", "ifrs", "modified", "gc"]]
+df = df[["key", "ifrs", "modified", "gc", "gaap"]]
 df.to_csv("auditReport_2_gaap_preprocessed.txt")
