@@ -19,7 +19,7 @@ from scipy.stats import mstats  # winsorize
 os.chdir(r"C:\data\financials\\")
 
 # 기본 테이블 입력
-df = pd.read_csv("dataframe.txt")
+df = pd.read_csv("dataframe_h2.txt")
 del df["Unnamed: 0"]
 
 df["toDrop"] = 1
@@ -280,4 +280,4 @@ result2 = result2[["10", "year", "score", "post", "ifrs", "adopt",
                    "dROA", "dCURRENT", "dDEBTDUE", "dLEVERAGE", "dFCF",
                    "merger", "split", "big", "first"]]
 
-result2.to_csv("h2_variables.txt")
+# result2.to_csv("h2_variables.txt")
