@@ -60,12 +60,13 @@ for path in tqdm([".\A001_1999\\", ".\A001_2000\\", ".\A001_2001\\",
     notes = path + "*_재무제표에대한주석*.*"  # 필요한 Keyword 입력
     pathNotes = glob.glob(notes)
     
-    financialStatements1C = path + "*_(첨부)연결재무제표*.*"  # 필요한 Keyword 입력
-    pathFS1C = glob.glob(financialStatements1C)
-    notesC = path + "*_연결재무제표에대한주석*.*"  # 필요한 Keyword 입력
-    pathNotesC = glob.glob(notesC)
+    # financialStatements1C = path + "*_(첨부)연결재무제표*.*"  # 필요한 Keyword 입력
+    # pathFS1C = glob.glob(financialStatements1C)
+    # notesC = path + "*_연결재무제표에대한주석*.*"  # 필요한 Keyword 입력
+    # pathNotesC = glob.glob(notesC)
             
-    pathList= pathList + pathFS1 + pathNotes + pathFS1C + pathNotesC
+    pathList= pathList + pathFS1 + pathNotes
+    # pathList= pathList + pathFS1 + pathNotes + pathFS1C + pathNotesC
 
 # 입수 과정에서 중복입수되어 표시된 duplicated 표시 파일 제거
 pathList = [x for x in pathList if "duplicated" not in x]
@@ -89,7 +90,7 @@ df["key"] = df[2] + df[6].str.slice(stop=10) + df["con"] \
           + df["amend"] + df[5] + df[8] + df[10]
 
 # sort by Entity
-# 6을 TRUE/FALSE로 조정한다. 가설 1 : FALSE (최초 보고) / 가설 2: TRUE (최종 보고)
+# 6을 TRUE/FALSE로 조정한다. 가설 1: TRUE (최초 보고) / 가설 2 : FALSE (최종 보고)
 df = df.sort_values(by=[10, 5, "con", 2, 6, "amend", 7],  
                     ascending=[True, True, True, False, 
                                True, # 가설에 따라 조정
@@ -135,4 +136,5 @@ for file in tqdm(pathListIter, desc="Main Loop"):
     stringList.append(string)
 
 df["documents"] = stringList
-df.to_csv("h1.preprocessedDocumentsOut_FS.txt")
+df.to_csv("h1.preprocessedDocumentsOut_FS_sep.txt")
+# 별도 재무제표만 입수

@@ -66,7 +66,7 @@ df["key"] = df[2] + df[6].str.slice(stop=10) + df["con"] \
           + df["amend"] + df[5] + df[8] + df[10]
 
 # sort by Entity
-# 6을 TRUE/FALSE로 조정한다. 가설 1 : FALSE (최초 보고) / 가설 2: TRUE (최종 보고)
+# 6을 TRUE/FALSE로 조정한다. 가설 1: TRUE (최초 보고) / 가설 2 : FALSE (최종 보고)
 df = df.sort_values(by=[10, 5, "con", 2, 6, "amend", 7],  
                     ascending=[True, True, True, False, 
                                False, # 가설에 따라 조정
