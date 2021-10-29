@@ -11,13 +11,13 @@ from collections import defaultdict
 
 import os
 import pandas as pd
-import numpy as np
+
 import re
 from tqdm import tqdm
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
-
+import csv
 
 ### n-gram 토크나이저 lovit/soynlp 참조 https://lovit.github.io/nlp/2018/10/23/ngram/
 
@@ -164,3 +164,8 @@ with open("h1.tfIdfVec_twitter_noun_trigram.pkl", 'wb') as output:
     pickle.dump(vec, output, pickle.HIGHEST_PROTOCOL)
 
 # pickle로 vector만 빼낸다
+
+with open('h1.trigram_list.csv', 'w') as f:
+    w = csv.DictWriter(f, ngram_counter.keys())
+    w.writeheader()
+    w.writerow(ngram_counter)

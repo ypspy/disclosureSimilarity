@@ -112,28 +112,5 @@ for i in range(1, len(df)):
 df = df[df["toDrop"] == 1]
 df = df.drop("toDrop", axis=1)
 
-# Path out
-pathListIter = df["path"].tolist()
-
-# Strings
-stringList = []
-for file in tqdm(pathListIter, desc="Main Loop"):
-
-    html = open(file, "r", encoding="utf-8")
-    soup = BeautifulSoup(html, "lxml")
-    html.close()
-        
-    soupNote = str(soup).split("주석</a>")[1]
-    soup = BeautifulSoup(soupNote, 'html.parser')
-    
-    tables =soup.find_all("table")
-        
-    [table.decompose() for table in soup.find_all("table") if calculateNumberRatio(table.text) > 10]
-    # Loughran and McDonald 2016
-    
-    string = preprocessString(soup.text)
-    stringList.append(string)
-
-df["documents"] = stringList
-df.to_csv("h1.preprocessedDocumentsOut_FS.txt")
-# 별도 재무제표만 입수
+os.chdir(r"C:\data\car\\")
+df.to_csv("dataframe_h1.txt")
