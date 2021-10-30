@@ -1,7 +1,7 @@
 library(plm)
 options(scipen=999)
 
-Panel <- read.csv("C:/data/car/h2_variables.txt")
+Panel <- read.csv("C:/data/car/h1_variables.txt")
 
 fixed <- plm(car_val ~ score + filelate + car_e_val + lnAsset
              + modified + gc + factor(year)

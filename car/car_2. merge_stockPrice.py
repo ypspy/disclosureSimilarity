@@ -7,7 +7,7 @@ Created on Tue Oct 12 22:39:52 2021
 
 import os
 import pandas as pd
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 def int_only_nums(val):
     try:
@@ -18,7 +18,8 @@ def int_only_nums(val):
 # 1. 작업 폴더로 변경
 os.chdir(r"C:\data\stockinfo\\")  # 작업 폴더로 변경
 
-for year in tqdm(range(1997, 1999), desc="concat"):
+
+for year in tqdm(range(2004, 2005), desc="concat"):
     df = pd.read_excel('basic_' + str(year * 10000 + 101) + '.xlsx',
                        index_col=None, header=None)
     df = df[df[7] != '-'][1:]

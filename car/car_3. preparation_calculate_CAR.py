@@ -26,7 +26,7 @@ dfM = dfM[dfM["date"].isna() == False]
 
 dfM["date"] = [x.strip() for x in dfM["date"]]
 
-for t in tqdm(range(0, 23)):
+for t in tqdm(range(6, 7)):
     df_0 = GenerateDataFrame(1997 + t)
     df_1 = GenerateDataFrame(1998 + t)
     df_2 = GenerateDataFrame(1999 + t)

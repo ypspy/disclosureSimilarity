@@ -228,8 +228,8 @@ result["lnLagAsset"] = [np.log(x) for x in result["lagAsset"]]
 
 # 추출
 result["X10"] = [x.replace("-","") for x in result["10"]]
-result = result[["X10", "year", "car_val", "score", "filelate", "car_e_val",
+result2 = result[["X10", "year", "car_val", "score", "filelate", "car_e_val",
                   "lnAsset", "lnLagAsset", "modified", "gc", "consolidated"]]
 
 os.chdir(r"C:\data\car\\")
-result.to_csv("h1_variables.txt")
+result2.to_csv("h1_variables.txt")
