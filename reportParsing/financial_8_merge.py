@@ -274,9 +274,14 @@ result["first"] = first
 result2 = result[result["FIRM"] == True]
 result2 = result2[result["cons"] == 1]
 
+# 기업코드 입력 후 DF에 반영
+df_ind = pd.read_excel("industry.xlsx", dtype={'KSIC': str}, sheet_name='data')
+result2 =result2.rename(columns={"11": "INDUSTRY"})
+result2 = pd.merge(result2, df_ind, on = "INDUSTRY", how ='left')
+
 # 추출
 result2["10"] = [x.replace("-","") for x in result2["10"]]
-result2 = result2[["10", "year", "score", "post", "ifrs", "adopt",
+result2 = result2[["10", "year", "KSIC", "score", "post", "ifrs", "adopt",
                    "dROA", "dCURRENT", "dDEBTDUE", "dLEVERAGE", "dFCF",
                    "merger", "split", "big", "first"]]
 
