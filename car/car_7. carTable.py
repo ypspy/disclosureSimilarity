@@ -129,27 +129,6 @@ del score["X"]
 # 총자산 DF 변환
 asset = pd.read_csv(r"C:\data\financials\financial_1_totalAsset_preprocessed.txt")
 
-# 추가 lag Asset Key 생성
-assetKey = []
-for entry in asset["key"]:
-    key = entry[22:]
-    year = int(key[1:5])
-    adjustedKey = ''.join(["(",str(year),key[5:]])
-    
-    assetKey.append(adjustedKey)
-asset["lagAssetKey"] = assetKey
-
-assetKey = []
-for entry in df["key"]:
-    key = entry[22:]
-    year = int(key[1:5])-1
-    adjustedKey = ''.join(["(",str(year),key[5:]])
-    
-    assetKey.append(adjustedKey)
-df["lagAssetKey"] = assetKey
-
-lagAsset = asset.drop_duplicates(subset=["lagAssetKey"])
-
 # 입수 감사보고서 정보 DF 변환
 auditor = pd.read_csv(r"C:\data\financials\auditReport_1_auditor_preprocessed.txt")
 del auditor["Unnamed: 0"]
@@ -161,8 +140,6 @@ result = pd.merge(df, score, how="inner", on=["key"])
 result = pd.merge(result, asset[["key", "asset"]], how="inner", on=["key"])
 result = pd.merge(result, auditor, how="inner", on=["key"])
 result = pd.merge(result, gaap, how="inner", on=["key"])
-
-result['lagAsset'] = result['lagAssetKey'].map(lagAsset.set_index("lagAssetKey")['asset'])
 
 # filelate 
 ## 수기 매핑된 due date 테이블 입력
@@ -176,7 +153,7 @@ for entry in range(len(result)):
         else:
             late.append(str(result.iloc[entry, 17]) + "90")
     else:
-        if result.iloc[entry, 44] == "한국채택국제회계기준":
+        if result.iloc[entry, 43] == "한국채택국제회계기준":
             late.append(str(result.iloc[entry, 17]) + "90")
         elif result.iloc[entry, 13] == "C" and result.iloc[entry, 26] == 1:
             late.append(str(result.iloc[entry, 17]) + "90")
@@ -192,20 +169,11 @@ result['dueDate'] = result['lateMap'].map(filelate.set_index("MAP")['SEP'])
 
 filelate = []
 for entry in range(len(result)):
-    if int(result.iloc[entry, 47]) < int(result.iloc[entry, 16]):
+    if int(result.iloc[entry, 45]) < int(result.iloc[entry, 16]):
         filelate.append(1)
     else:
         filelate.append(0)
 result["filelate"] = filelate
-
-# 연결 더미
-consolidated =  []
-for entry in range(len(result)):
-    if result.iloc[entry, 13] == "C":
-        consolidated.append(1)
-    else:
-        consolidated.append(0)
-result["consolidated"] = consolidated
 
 # 누적초과수익률 윈저라이즈 후 절대값 처리
 result["car_val"] = mstats.winsorize(result["car_val"], limits=0.01)  # 절대값 처리전 윈저라이즈
@@ -224,12 +192,73 @@ result["car_e_val"] = container
 # 총자산 로그 처리 후 윈저라이즈
 result["lnAsset"] = [np.log(x) for x in result["asset"]]
 result["lnAsset"] = mstats.winsorize(result["lnAsset"], limits=0.01)
-result["lnLagAsset"] = [np.log(x) for x in result["lagAsset"]]
+
+# 기업코드 입력 후 DF에 반영
+df_ind = pd.read_excel(r"C:\data\financials\industry.xlsx", dtype={'KSIC': str}, sheet_name='data')
+result = result.rename(columns={"11": "INDUSTRY"})
+result = pd.merge(result, df_ind, on = "INDUSTRY", how ='left')
+
+# Change to datafolder
+os.chdir(r"C:\data\financials\\")
+
+# 입수 재무정보 DF 변환
+dfA = pd.read_csv("financial_1_totalAsset_preprocessed.txt")
+dfB = pd.read_csv("financial_2_totalEquity_preprocessed.txt")
+dfC = pd.read_csv("financial_3_netIncome_preprocessed.txt")
+dfD = pd.read_csv("financial_6_operatingCashFlow_preprocessed.txt")
+
+# index column 일괄 제거
+for table in [dfA, dfB, dfC, dfD]:
+    del table["Unnamed: 0"]
+
+# Key로 Merge
+result = pd.merge(result, dfA, how="inner", on=["key"])
+for table in [dfB, dfC, dfD]:
+    result = pd.merge(result, table, how="inner", on=["key"]) 
+
+# 법인등록번호 누락 Entry 제거
+result = result[result["10"].isna() == False]
+
+# 총부채 입력
+liability = []
+for entry in tqdm(range(len(result))):
+    if result.iloc[entry, 53]:
+        liability.append(result.iloc[entry, 51]-result.iloc[entry, 52])
+    else:
+        liability.append(result.iloc[entry, 52])
+result["liability"] = liability
+del result["credit"]
+del result["equity"]
+
+# ROA 계산
+roa = []
+for entry in tqdm(range(len(result))):
+    roa.append(result.iloc[entry, 52]/result.iloc[entry,51])
+result["roa"] = roa
+result["roa"] = result["roa"].round(4)
+result["roa"] = mstats.winsorize(result["roa"], limits=0.01)  # 윈저라이즈
+
+# 부채비중 계산
+leverage = []
+for entry in tqdm(range(len(result))):
+    leverage.append(result.iloc[entry,54]/result.iloc[entry,51])
+result["leverage"] = leverage
+result["leverage"] = result["leverage"].round(4)
+result["leverage"] = mstats.winsorize(result["leverage"], limits=0.01)  # 윈저라이즈
+
+# 영업현금흐름 계산
+ocf = []
+for entry in tqdm(range(len(result))):
+    ocf.append((result.iloc[entry,53])/result.iloc[entry,51])
+result["ocf"] = ocf
+result["ocf"] = result["ocf"].round(4)
+result["ocf"] = mstats.winsorize(result["ocf"], limits=0.01)  # 윈저라이즈
 
 # 추출
 result["X10"] = [x.replace("-","") for x in result["10"]]
-result2 = result[["X10", "year", "car_val", "score", "filelate", "car_e_val",
-                  "lnAsset", "lnLagAsset", "modified", "gc", "consolidated"]]
+result2 = result[["X10", "year", "KSIC_y", "car_val", "score", "filelate", "car_e_val",
+                  "lnAsset", "roa", "leverage", "ocf", "modified", "gc"]]
 
 os.chdir(r"C:\data\car\\")
+
 result2.to_csv("h1_variables.txt")
