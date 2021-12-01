@@ -285,4 +285,4 @@ result2 = result2[["10", "year", "KSIC", "score", "post", "ifrs", "adopt",
                    "dROA", "dCURRENT", "dDEBTDUE", "dLEVERAGE", "dFCF",
                    "merger", "split", "big", "first"]]
 
-result2.to_csv("h2_variables.txt")
+# result2.to_csv("h2_variables.txt")
