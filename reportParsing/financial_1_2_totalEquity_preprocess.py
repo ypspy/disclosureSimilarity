@@ -45,7 +45,7 @@ def preprocessAccount(value):
 
 
 # Change to datafolder
-os.chdir(r"C:\data\financials\\")
+os.chdir(r"C:\data2")
 
 # 입수 재무정보 DF 변환 후 NaN 제거
 df = pd.read_csv("financial_2_totalEquity.txt")
@@ -94,7 +94,7 @@ del df["drop"]
 # 이상치 제거 2  : set로 중복 제거하여 부적합한 계정 제거
 dropList = ["구분", "과목", "예수금", "기타자본", "사채주석",
             "연결조정대", "이익잉여금", "기초의현금", "비지배지분",
-            "자산총계"]
+            "자산총계", "결손금", "이연수익", "자본금", "기타자본주"]
 
 df["drop"] = [True if x in dropList else False for x in df["account"]]
 df = df[df["drop"] == False]

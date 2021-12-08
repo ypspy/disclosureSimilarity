@@ -24,10 +24,10 @@ def preprocessAccount(value):
 
 
 # Change to datafolder
-os.chdir(r"C:\data\financials\\")
+os.chdir(r"C:\data2")
 
 # 입수 재무정보 DF 변환 후 NaN 제거
-df = pd.read_csv("auditReport_2_gaap.txt")
+df = pd.read_csv("voluntary_1_auditReport_2_gaap.txt")
 df = df[df["GAAP"].isna() == False]
 start = len(df)
 

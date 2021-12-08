@@ -31,7 +31,7 @@ def preprocessAccount(value):
 
 
 # Change to datafolder
-os.chdir(r"C:\data\financials\\")
+os.chdir(r"C:\data2")
 
 # 입수 재무정보 DF 변환 후 NaN 제거
 df = pd.read_csv("financial_1_totalAsset.txt")

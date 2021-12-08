@@ -45,7 +45,7 @@ def preprocessAccount(value):
 
 
 # Change to datafolder
-os.chdir(r"C:\data\financials\\")
+os.chdir(r"C:\data2")
 
 # 입수 재무정보 DF 변환 후 NaN 제거
 df = pd.read_csv("financial_6_operatingCashFlow.txt")
@@ -88,6 +88,8 @@ df["value"] = [int(x) for x in df["value"]]
 
 # 산출치 입력
 df["operatingCF"] = df["unit"].astype('int') * df["value"] * df["valueSigned"]
+
+df = df[df["accounts"] != "중단영업으로인한영업활동순현금흐름"]
 
 # 작업 검증 (순이익은 사용하지 않음)
 unique = set(df["accounts"])
