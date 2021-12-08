@@ -279,10 +279,46 @@ df_ind = pd.read_excel("industry.xlsx", dtype={'KSIC': str}, sheet_name='data')
 result2 =result2.rename(columns={"11": "INDUSTRY"})
 result2 = pd.merge(result2, df_ind, on = "INDUSTRY", how ='left')
 
+# 강제도입 더미 입력
+mandatory = []
+for entry in tqdm(range(len(result2))):
+    mandatory.append(result2.iloc[entry,46] * result2.iloc[entry,9])
+result2["mandatory"] = mandatory
+
+# 자발적도입 더미 입력 작업
+
+pre = []
+for entry in tqdm(range(len(result2))):
+    if result2.iloc[entry,45] <= 2010:
+        pre.append(1)
+    else:
+        pre.append(0)
+result2["pre"] = pre
+
+voluntary = []
+for entry in tqdm(range(len(result2))):
+    voluntary.append(result2.iloc[entry,54] * result2.iloc[entry,9])
+result2["voluntary"] = voluntary
+
 # 추출
 result2["10"] = [x.replace("-","") for x in result2["10"]]
-result2 = result2[["10", "year", "KSIC", "score", "post", "ifrs", "adopt",
-                   "dROA", "dCURRENT", "dDEBTDUE", "dLEVERAGE", "dFCF",
-                   "merger", "split", "big", "first"]]
+result2 = result2[["10", "year", "KSIC", "score", "ifrs", "mandatory", "voluntary", "adopt",
+                    "dROA", "dCURRENT", "dDEBTDUE", "dLEVERAGE", "dFCF",
+                    "merger", "split", "big", "first", "key", "8", "FIN"]]
 
-# result2.to_csv("h2_variables.txt")
+result2["stock"] = result2["8"].isna()
+
+for i in tqdm(range(len(result2))):
+    if result2.iloc[i,4] == 1 and result2.iloc[i,1] > 2010:
+        if result2.iloc[i,19] == 1 or result2.iloc[i,20] == False:
+            result2.iloc[i,5] = 1
+            result2.iloc[i,6] = 0
+        else:
+            result2.iloc[i,5] = 0
+            result2.iloc[i,6] = 1
+
+result2 = result2[["10", "year", "KSIC", "score", "ifrs", "mandatory", "voluntary", "adopt",
+                    "dROA", "dCURRENT", "dDEBTDUE", "dLEVERAGE", "dFCF",
+                    "merger", "split", "big", "first", "key"]]
+
+result2.to_csv("h2_variables.txt")
