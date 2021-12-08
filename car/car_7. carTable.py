@@ -254,10 +254,37 @@ result["ocf"] = ocf
 result["ocf"] = result["ocf"].round(4)
 result["ocf"] = mstats.winsorize(result["ocf"], limits=0.01)  # 윈저라이즈
 
+# interaction Term 입력
+post = []
+for entry in tqdm(range(len(result))):
+    if result.iloc[entry,17] > 2010:
+        post.append(1)
+    else:
+        post.append(0)
+result["post"] = post
+
+pre = []
+for entry in tqdm(range(len(result))):
+    if result.iloc[entry,17] <= 2010:
+        pre.append(1)
+    else:
+        pre.append(0)
+result["pre"] = pre
+
+mandatory = []
+for entry in tqdm(range(len(result))):
+    mandatory.append(result.iloc[entry,58] * result.iloc[entry,40])
+result["mandatory"] = mandatory
+
+voluntary = []
+for entry in tqdm(range(len(result))):
+    voluntary.append(result.iloc[entry,59] * result.iloc[entry,40])
+result["voluntary"] = voluntary
+
 # 추출
 result["X10"] = [x.replace("-","") for x in result["10"]]
 result2 = result[["X10", "year", "KSIC_y", "car_val", "score", "filelate", "car_e_val",
-                  "lnAsset", "roa", "leverage", "ocf", "modified", "gc"]]
+                  "lnAsset", "roa", "leverage", "ocf", "modified", "gc", "voluntary", "mandatory", "ifrs"]]
 
 os.chdir(r"C:\data\car\\")
 
